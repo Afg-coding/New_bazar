@@ -1,1 +1,431 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>افغان بازار - نسخه موبایل</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+</head>
+<body>
 
+<!-- ============================================================
+     اسپلش اسکرین
+     ============================================================ -->
+<div id="splashScreen">
+    <div class="splash-content">
+        <div class="splash-icon">🛍️</div>
+        <h1>افغان بازار</h1>
+        <p>بارگذاری...</p>
+        <div class="splash-loader"></div>
+    </div>
+</div>
+
+<!-- ============================================================
+     وضعیت اینترنت
+     ============================================================ -->
+<div id="offlineBanner" style="display:none;">
+    ⚠️ اتصال اینترنت قطع است. برخی قابلیت‌ها در دسترس نیستند.
+</div>
+
+<!-- ============================================================
+     منوی همبرگری (سایدبار)
+     ============================================================ -->
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+<nav id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-user">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-userinfo">
+                <div class="sidebar-name" id="sidebarName">کاربر مهمان</div>
+                <div class="sidebar-email" id="sidebarEmail">وارد شوید</div>
+            </div>
+        </div>
+        <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="sidebar-item" onclick="navigateTo('home'); closeSidebar();">
+            <span class="sidebar-icon">🏠</span>
+            <span>صفحه اصلی</span>
+        </div>
+        <div class="sidebar-item" onclick="navigateTo('profile'); closeSidebar();">
+            <span class="sidebar-icon">👤</span>
+            <span>پروفایل من</span>
+        </div>
+        <div class="sidebar-item" onclick="navigateTo('messages'); closeSidebar();">
+            <span class="sidebar-icon">💬</span>
+            <span>پیام‌ها</span>
+        </div>
+        <div class="sidebar-item" onclick="navigateTo('favorites'); closeSidebar();">
+            <span class="sidebar-icon">❤️</span>
+            <span>علاقه‌مندی‌ها</span>
+        </div>
+        <div class="sidebar-item" onclick="navigateTo('ai'); closeSidebar();">
+            <span class="sidebar-icon">🤖</span>
+            <span>هوش مصنوعی</span>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" onclick="shareApp('telegram')">
+            <span class="sidebar-icon">📱</span>
+            <span>اشتراک‌گذاری در تلگرام</span>
+        </div>
+        <div class="sidebar-item" onclick="shareApp('whatsapp')">
+            <span class="sidebar-icon">💚</span>
+            <span>اشتراک‌گذاری در واتساپ</span>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" onclick="showAbout()">
+            <span class="sidebar-icon">ℹ️</span>
+            <span>درباره ما</span>
+        </div>
+        <div class="sidebar-item" onclick="showPremiumInfo()">
+            <span class="sidebar-icon">⭐</span>
+            <span>نسخه پریمیوم</span>
+        </div>
+        <div class="sidebar-item" onclick="openSupport()">
+            <span class="sidebar-icon">🛡️</span>
+            <span>کانال پشتیبانی</span>
+        </div>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-item" style="color:var(--text-muted);font-size:12px;">
+            <span>نسخه 3.1.0</span>
+        </div>
+        <div class="sidebar-item" id="sidebarLogout" style="display:none;" onclick="logoutUser()">
+            <span class="sidebar-icon">🚪</span>
+            <span style="color:var(--danger);">خروج از حساب</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================
+     اپلیکیشن اصلی
+     ============================================================ -->
+<div id="app">
+    
+    <!-- هدر -->
+    <header class="app-header">
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <div class="header-title">🛍️ افغان بازار</div>
+        <div class="header-actions">
+            <button class="header-btn" onclick="navigateTo('notifications')" id="notifBtn">
+                🔔
+                <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- محتوای اصلی -->
+    <main class="app-content" id="appContent">
+        <!-- صفحات مختلف توسط JS بارگذاری می‌شوند -->
+    </main>
+
+    <!-- ناوبری پایین -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">خانه</span>
+        </button>
+        <button class="nav-item" data-page="messages" onclick="navigateTo('messages')">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">پیام‌ها</span>
+            <span class="nav-badge" id="msgBadge" style="display:none;">0</span>
+        </button>
+        <button class="nav-item" data-page="add-ad" onclick="navigateTo('add-ad')" id="addAdBtn">
+            <span class="nav-icon nav-add">➕</span>
+            <span class="nav-label">آگهی</span>
+        </button>
+        <button class="nav-item" data-page="favorites" onclick="navigateTo('favorites')">
+            <span class="nav-icon">❤️</span>
+            <span class="nav-label">علاقه‌ها</span>
+        </button>
+        <button class="nav-item" data-page="profile" onclick="navigateTo('profile')">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">پروفایل</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ============================================================
+     مودال‌ها
+     ============================================================ -->
+
+<!-- مودال ورود -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>🔐 ورود</h2>
+            <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="loginForm" onsubmit="loginWithEmail(event)">
+                <div class="form-group">
+                    <label>📧 ایمیل</label>
+                    <input type="email" id="loginEmail" placeholder="example@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>🔑 رمز عبور</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">🚀 ورود</button>
+            </form>
+            <div class="modal-links">
+                <a onclick="closeModal('loginModal'); openModal('registerModal')">📝 ثبت‌نام</a>
+                <a onclick="closeModal('loginModal'); openModal('resetModal')">🔑 رمز را فراموش کردید؟</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ثبت‌نام -->
+<div class="modal-overlay" id="registerModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>📝 ثبت‌نام</h2>
+            <button class="modal-close" onclick="closeModal('registerModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="registerForm" onsubmit="registerWithEmail(event)">
+                <div class="form-group">
+                    <label>👤 نام کامل</label>
+                    <input type="text" id="regName" placeholder="مثال: احمد رضایی" required>
+                </div>
+                <div class="form-group">
+                    <label>📧 ایمیل</label>
+                    <input type="email" id="regEmail" placeholder="example@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>📱 شماره تماس (افغانستان)</label>
+                    <input type="tel" id="regPhone" placeholder="07XXXXXXXX" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-group">
+                    <label>🪪 شماره تذکره</label>
+                    <input type="text" id="regTazkira" placeholder="شماره تذکره" required>
+                </div>
+                <div class="form-group">
+                    <label>🔑 رمز عبور (حداقل ۶ کاراکتر)</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label>🔑 تکرار رمز عبور</label>
+                    <input type="password" id="regPassword2" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">✅ ثبت‌نام</button>
+            </form>
+            <div class="modal-links">
+                <a onclick="closeModal('registerModal'); openModal('loginModal')">↩️ قبلاً ثبت‌نام کردید؟</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ریست رمز -->
+<div class="modal-overlay" id="resetModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>🔑 بازیابی رمز</h2>
+            <button class="modal-close" onclick="closeModal('resetModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <form id="resetForm" onsubmit="resetPassword(event)">
+                <div class="form-group">
+                    <label>📧 ایمیل</label>
+                    <input type="email" id="resetEmail" placeholder="example@email.com" required>
+                </div>
+                <button type="submit" class="btn btn-warning btn-block">📧 ارسال لینک</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال تیک آبی -->
+<div class="modal-overlay" id="blueTickModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>🔵 تیک آبی</h2>
+            <button class="modal-close" onclick="closeModal('blueTickModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="blue-tick-info">
+                <div class="blue-tick-icon">🔵</div>
+                <h3>دریافت تیک آبی</h3>
+                <p>برای دریافت تیک آبی، لطفاً درخواست خود را به ایمیل زیر ارسال کنید:</p>
+                <div class="blue-tick-email">📧 jabirsitez786@gmail.com</div>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:10px;">
+                    لطفاً مدارک هویتی و دلیل درخواست خود را ارسال کنید.
+                </p>
+                <button class="btn btn-primary btn-block" onclick="window.location.href='mailto:jabirsitez786@gmail.com?subject=درخواست تیک آبی'">
+                    📧 ارسال ایمیل
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال پریمیوم -->
+<div class="modal-overlay" id="premiumModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>⭐ نسخه پریمیوم</h2>
+            <button class="modal-close" onclick="closeModal('premiumModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="premium-info">
+                <div class="premium-icon">⭐</div>
+                <h3>ویژگی‌های پریمیوم</h3>
+                <ul class="premium-features">
+                    <li>🔵 تیک آبی</li>
+                    <li>📌 پین کردن آگهی در صدر</li>
+                    <li>🔔 اعلانات ویژه</li>
+                    <li>🎨 تم اختصاصی</li>
+                    <li>📊 آمار پیشرفته</li>
+                </ul>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:10px;">
+                    برای دریافت نسخه پریمیوم، به ایمیل زیر پیام دهید:
+                </p>
+                <div class="premium-email">📧 jabirsitez786@gmail.com</div>
+                <button class="btn btn-warning btn-block" onclick="window.location.href='mailto:jabirsitez786@gmail.com?subject=درخواست پریمیوم'">
+                    📧 درخواست پریمیوم
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال کانال پشتیبانی -->
+<div class="modal-overlay" id="supportModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h2>🛡️ کانال پشتیبانی</h2>
+            <button class="modal-close" onclick="closeModal('supportModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="support-container" id="supportContainer">
+                <div class="support-messages" id="supportMessages">
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <h3>هنوز پیامی وجود ندارد</h3>
+                    </div>
+                </div>
+                <div class="support-input">
+                    <input type="text" id="supportInput" placeholder="پیام خود را بنویسید..." onkeypress="if(event.key==='Enter') sendSupportMessage()">
+                    <button class="btn btn-primary" onclick="sendSupportMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال مدیریت -->
+<div class="modal-overlay" id="adminModal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h2>⚙️ پنل مدیریت</h2>
+            <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('users')">👥 کاربران</button>
+                <button class="admin-tab" onclick="switchAdminTab('ads')">📢 آگهی‌ها</button>
+                <button class="admin-tab" onclick="switchAdminTab('notifications')">🔔 اعلانات</button>
+                <button class="admin-tab" onclick="switchAdminTab('reports')">🚨 گزارشات</button>
+            </div>
+            <div class="admin-content active" id="adminUsers">
+                <div class="admin-search">
+                    <input type="text" id="adminUserSearch" placeholder="🔍 جستجوی کاربر..." onkeyup="filterAdminUsers()">
+                </div>
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>نام</th>
+                                <th>ایمیل</th>
+                                <th>تیک</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="admin-content" id="adminAds">
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>عنوان</th>
+                                <th>کاربر</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAdsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="admin-content" id="adminNotifications">
+                <div class="form-group">
+                    <label>📝 متن اعلان</label>
+                    <textarea id="adminNotifText" placeholder="متن اعلان..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>🎬 ویدیو (اختیاری)</label>
+                    <input type="file" id="adminNotifVideo" accept="video/*">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="sendAdminNotification()">📢 ارسال اعلان</button>
+                <div class="admin-notif-list" id="adminNotifList"></div>
+            </div>
+            <div class="admin-content" id="adminReports">
+                <div id="adminReportsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <h3>هیچ گزارشی وجود ندارد</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال درباره ما -->
+<div class="modal-overlay" id="aboutModal">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h2>ℹ️ درباره ما</h2>
+            <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="about-content" style="text-align:center;">
+                <div style="font-size:48px;margin-bottom:16px;">🛍️</div>
+                <h3>افغان بازار</h3>
+                <p>بزرگترین بازار آنلاین افغانستان</p>
+                <p style="font-size:13px;color:var(--text-muted);margin-top:10px;">
+                    نسخه 3.1.0
+                </p>
+                <p style="font-size:13px;color:var(--text-muted);">
+                    © 2024 تمام حقوق محفوظ است
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     اسکریپت‌ها
+     ============================================================ -->
+<script type="importmap">
+{
+    "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js",
+        "firebase/storage": "https://www.gstatic.com/firebasejs/12.15.0/firebase-storage.js"
+    }
+}
+</script>
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
